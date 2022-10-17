@@ -24,7 +24,8 @@ const Canvas: CanvasProps = () => {
     setTriger(false);
     setWidth(window.innerWidth - 127);
     setHeigth(window.innerHeight - window.innerHeight * 0.1);
-    setPosition({ y: mass.current?.offsetTop, x: mass.current?.offsetLeft });
+    setTimeout(()=>{setPosition({ y: mass.current?.offsetTop, x: mass.current?.offsetLeft });})
+    
   }, []);
 
   function draw(el: any = lineArr): void {
@@ -45,6 +46,8 @@ const Canvas: CanvasProps = () => {
     }
   }
   function calc(e: CanvasHTML): { x: number; y: number } {
+    console.log(position);
+    
     const x = e.pageX - (position.x || 0);
     const y = e.pageY - (position.y || 0);
 
