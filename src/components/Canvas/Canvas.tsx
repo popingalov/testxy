@@ -23,7 +23,7 @@ const Canvas: CanvasProps = () => {
   useEffect(() => {
     setTriger(false);
     setWidth(window.innerWidth - 127);
-    setHeigth(window.innerHeight - window.innerHeight * 0.1);
+    setHeigth(window.innerHeight - window.innerHeight * 0.2);
     setTimeout(()=>{setPosition({ y: mass.current?.offsetTop, x: mass.current?.offsetLeft });})
     
   }, []);
