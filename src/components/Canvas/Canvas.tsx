@@ -1,20 +1,17 @@
-import { FC, useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import s from './Canvas.module.scss';
-import throttle from 'lodash.throttle';
+// import throttle from 'lodash.throttle';
 interface CanvasProps {
   (): JSX.Element;
 }
 type CanvasHTML = React.MouseEvent<HTMLCanvasElement>;
 type Canva = CanvasRenderingContext2D | null | undefined;
 type Obj = { start: { x: number; y: number }; end: { x: number; y: number } };
-type String = string;
-type Result = number[] | false;
 const Canvas: CanvasProps = () => {
   let mass = useRef<HTMLCanvasElement>(null);
   const ctx: Canva = mass.current?.getContext('2d');
   const [position, setPosition]: any = useState();
   const [start, setStart] = useState({ x: 0, y: 0 });
-  const [end, setEnd] = useState({ x: 0, y: 0 });
   const [triger, setTriger]: any = useState();
   const [lineArr, setLineArr]: any = useState([]);
   const [dot, setDot]: any = useState([]);
@@ -105,14 +102,12 @@ const Canvas: CanvasProps = () => {
   function last(e: CanvasHTML) {
     setTriger(false);
     setDrawTriger(false);
-    const line = calc(e);
     if (ctx) {
       const allDot = [...dotA, ...dot];
 
       setDot(allDot);
       grafiti(allDot);
     }
-    setEnd(line);
   }
 
   function handlClick(e: CanvasHTML): void {
@@ -142,7 +137,6 @@ const Canvas: CanvasProps = () => {
   function handlMove(e: CanvasHTML): void {
     if (triger) {
       const { x, y } = calc(e);
-      setEnd({ x, y });
 
       const line = {
         start,
@@ -247,7 +241,7 @@ setAnimationTriger(true)
               end,
             });
 
-            const result = helper.reduce((_: any[], ell: any) => {
+           helper.reduce((_: any[], ell: any) => {
               const helper = intersect(
                 ell.start.x,
                 ell.start.y,
