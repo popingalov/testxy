@@ -286,7 +286,8 @@ const Canvas: CanvasProps = () => {
     }, 4000);
   }
   return (
-    <div className={s.Canvas}>
+    <div className={s.box}>
+          <div className={s.Canvas}>
       <canvas
         onMouseMove={handlMove}
         onClick={handlClick}
@@ -296,8 +297,9 @@ const Canvas: CanvasProps = () => {
         height={heigth}
         className={s.Canvass}
       />
-      <button onClick={clearBut}>Click me please</button>
     </div>
+      <button onClick={clearBut}>Click me please</button>
+</div>
   );
 };
 

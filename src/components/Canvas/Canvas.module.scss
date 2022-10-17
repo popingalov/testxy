@@ -1,17 +1,24 @@
 .Canvas {
   margin: 50px;
   border: 5px solid red;
-  height: 90vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  height: 80vh;
+  // display: flex;
+  // flex-direction: column;
+  // align-items: center;
   canvas {
     margin-bottom: 30px;
    
   }
-  button {
-    border: 1px solid red;
-    width: 100px;
-    height: 200px;
-  }
+
+}
+.box{
+      display: flex;
+        flex-direction: column;
+        align-items: center;
+          button {
+              border: 1px solid red;
+              width: 200px;
+              height: 50px;
+              text-align: center;
+            }
 }
