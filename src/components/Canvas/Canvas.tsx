@@ -18,10 +18,12 @@ const Canvas: CanvasProps = () => {
   const [dotA, setDotA]: any = useState([]);
   const [drawTrig, setDrawTriger]: any = useState(false);
   const [animationTriger, setAnimationTriger]: any = useState(false);
-
+  const [width, setWidth]: any = useState();
+  const [heigth, setHeigth]: any = useState();
   useEffect(() => {
     setTriger(false);
-
+    setWidth(window.innerWidth - 127);
+    setHeigth(window.innerHeight - window.innerHeight * 0.1);
     setPosition({ y: mass.current?.offsetTop, x: mass.current?.offsetLeft });
   }, []);
 
@@ -111,7 +113,7 @@ const Canvas: CanvasProps = () => {
   }
 
   function handlClick(e: CanvasHTML): void {
-    if ( animationTriger) return
+    if (animationTriger) return;
     if (!triger) {
       first(e);
       return;
@@ -222,10 +224,10 @@ const Canvas: CanvasProps = () => {
   }
 
   function clearBut(e: React.MouseEvent<HTMLButtonElement>): void {
-setAnimationTriger(true)
+    setAnimationTriger(true);
 
     e.preventDefault();
-    (function loops(el: any, triger:number): any {
+    (function loops(el: any, triger: number): any {
       if (triger <= 0) {
         return;
       }
@@ -241,7 +243,7 @@ setAnimationTriger(true)
               end,
             });
 
-           helper.reduce((_: any[], ell: any) => {
+            helper.reduce((_: any[], ell: any) => {
               const helper = intersect(
                 ell.start.x,
                 ell.start.y,
@@ -276,7 +278,7 @@ setAnimationTriger(true)
       setLineArr([]);
       setDot([]);
       setDotA([]);
-      setAnimationTriger(false)
+      setAnimationTriger(false);
       ctx?.clearRect(0, 0, 33333, 33333);
     }, 4000);
   }
@@ -287,8 +289,9 @@ setAnimationTriger(true)
         onClick={handlClick}
         onContextMenu={rightClick}
         ref={mass}
-        width={1300}
-        height={700}
+        width={width}
+        height={heigth}
+        className={s.Canvass}
       />
       <button onClick={clearBut}>Click me please</button>
     </div>
