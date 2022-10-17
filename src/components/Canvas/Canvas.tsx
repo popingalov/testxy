@@ -20,7 +20,7 @@ const Canvas: CanvasProps = () => {
   const [dot, setDot]: any = useState([]);
   const [dotA, setDotA]: any = useState([]);
   const [drawTrig, setDrawTriger]: any = useState(false);
-  const [randomTriger, setRandomTriger]: any = useState(true);
+  const [animationTriger, setAnimationTriger]: any = useState(false);
 
   useEffect(() => {
     setTriger(false);
@@ -28,8 +28,8 @@ const Canvas: CanvasProps = () => {
     setPosition({ y: mass.current?.offsetTop, x: mass.current?.offsetLeft });
   }, []);
 
-  function draw(): void {
-    lineArr.forEach((e: any) => {
+  function draw(el: any = lineArr): void {
+    el.forEach((e: any) => {
       drawLine(ctx, e);
     });
   }
@@ -116,8 +116,7 @@ const Canvas: CanvasProps = () => {
   }
 
   function handlClick(e: CanvasHTML): void {
-    console.log(e);
-
+    if ( animationTriger) return
     if (!triger) {
       first(e);
       return;
@@ -135,7 +134,6 @@ const Canvas: CanvasProps = () => {
         ctx.beginPath();
         ctx.arc(e.x, e.y, 5, 0, Math.PI * 2, true);
         ctx.fillStyle = 'red';
-
         ctx.fill('evenodd');
       });
     }
@@ -189,8 +187,10 @@ const Canvas: CanvasProps = () => {
             const allDot = [...result, ...dot];
             setDotA(result);
             grafiti(allDot);
+            return;
           }
           setDotA(result);
+          grafiti(dot);
         }
       }
     }
@@ -200,22 +200,91 @@ const Canvas: CanvasProps = () => {
     e.preventDefault();
     if (drawTrig) {
       const newArr = lineArr;
-    newArr.pop();
-    setLineArr(newArr);
-    clearLine();
-    draw();
-    grafiti(dot);
-    setDrawTriger(false);
-    setTriger(!triger);
- }
+      newArr.pop();
+      setLineArr(newArr);
+      clearLine();
+      draw();
+      grafiti(dot);
+      setDrawTriger(false);
+      setTriger(!triger);
+    }
+  }
+
+  function helperClac(el: any) {
+    const balanseX = (el.start.x + el.end.x) / 2;
+    const balanseY = (el.start.y + el.end.y) / 2;
+
+    const helperXS = el.start.x + (balanseX - el.start.x) * 0.1;
+    const helperYS = el.start.y + (balanseY - el.start.y) * 0.1;
+
+    const helperXE = el.end.x + (balanseX - el.end.x) * 0.1;
+    const helperYE = el.end.y + (balanseY - el.end.y) * 0.1;
+
+    const result = {
+      start: { x: helperXS, y: helperYS },
+      end: { x: helperXE, y: helperYE },
+    };
+    return result;
   }
 
   function clearBut(e: React.MouseEvent<HTMLButtonElement>): void {
+setAnimationTriger(true)
+
     e.preventDefault();
-    setLineArr([]);
-    setDot([]);
-    setDotA([]);
-    ctx?.clearRect(0, 0, 33333, 33333);
+    (function loops(el: any, triger:number): any {
+      if (triger <= 0) {
+        return;
+      }
+      let newTriger = triger - 200;
+      const helper = el.line || el;
+      setTimeout(() => {
+        const red = helper.reduce(
+          (acc: any, el: any) => {
+            const { start, end } = helperClac(el);
+
+            acc.line.push({
+              start,
+              end,
+            });
+
+            const result = helper.reduce((_: any[], ell: any) => {
+              const helper = intersect(
+                ell.start.x,
+                ell.start.y,
+                ell.end.x,
+                ell.end.y,
+                el.start.x,
+                el.start.y,
+                el.end.x,
+                el.end.y,
+              );
+
+              if (helper) {
+                acc.dots.push(helper);
+              }
+              return acc;
+            }, []);
+            // if (result.length > 0) acc.dots.push(result);
+
+            return acc;
+          },
+          { line: [], dots: [] },
+        );
+        setLineArr(red);
+        clearLine();
+        grafiti(red.dots);
+        draw(red.line);
+        loops(red, newTriger);
+      }, 65);
+    })(lineArr, 10000);
+
+    setTimeout(() => {
+      setLineArr([]);
+      setDot([]);
+      setDotA([]);
+      setAnimationTriger(false)
+      ctx?.clearRect(0, 0, 33333, 33333);
+    }, 4000);
   }
   return (
     <div className={s.Canvas}>
