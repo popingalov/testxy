@@ -222,12 +222,13 @@ const Canvas: CanvasProps = () => {
 
   function rightClick(e: React.MouseEvent<HTMLCanvasElement, MouseEvent>) {
     e.preventDefault();
-    if (drawTrig) {
+    if (triger) {
       const newArr = lineArr;
       newArr.pop();
       setLineArr(newArr);
       clearLine();
       draw();
+      setDotA([])
       grafiti(dot);
       setDrawTriger(false);
       setTriger(!triger);
