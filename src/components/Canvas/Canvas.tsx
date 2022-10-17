@@ -4,32 +4,57 @@ import s from './Canvas.module.scss';
 interface CanvasProps {
   (): JSX.Element;
 }
+
 type CanvasHTML = React.MouseEvent<HTMLCanvasElement>;
 type Canva = CanvasRenderingContext2D | null | undefined;
-type Obj = { start: { x: number; y: number }; end: { x: number; y: number } };
+
+interface Obj {
+  start: { x: number; y: number };
+  end: { x: number; y: number };
+}
+type TlineAr = Obj[];
+
+interface Tpos {
+  x: number;
+  y: number;
+}
+
+interface Dot {
+  x: number;
+  y: number;
+}
+type Tdot = Dot[];
+
 const Canvas: CanvasProps = () => {
   let mass = useRef<HTMLCanvasElement>(null);
   const ctx: Canva = mass.current?.getContext('2d');
-  const [position, setPosition]: any = useState();
-  const [start, setStart] = useState({ x: 0, y: 0 });
-  const [triger, setTriger]: any = useState();
-  const [lineArr, setLineArr]: any = useState([]);
-  const [dot, setDot]: any = useState([]);
-  const [dotA, setDotA]: any = useState([]);
-  const [drawTrig, setDrawTriger]: any = useState(false);
-  const [animationTriger, setAnimationTriger]: any = useState(false);
-  const [width, setWidth]: any = useState();
-  const [heigth, setHeigth]: any = useState();
+  const [position, setPosition] = useState<Tpos>({ x: 0, y: 0 });
+  const [start, setStart] = useState<Tpos>({ x: 0, y: 0 });
+  const [triger, setTriger] = useState<boolean>(false);
+  const [lineArr, setLineArr] = useState<TlineAr>([]);
+  const [dot, setDot] = useState<Tdot>([]);
+  const [dotA, setDotA] = useState<Tdot>([]);
+  const [drawTrig, setDrawTriger] = useState(false);
+  const [animationTriger, setAnimationTriger] = useState(false);
+  const [width, setWidth] = useState(0);
+  const [heigth, setHeigth] = useState(0);
+
   useEffect(() => {
     setTriger(false);
     setWidth(window.innerWidth - 127);
     setHeigth(window.innerHeight - window.innerHeight * 0.2);
-    setTimeout(()=>{setPosition({ y: mass.current?.offsetTop, x: mass.current?.offsetLeft });})
-    
+    setTimeout(() => {
+      if (mass.current) {
+        setPosition({
+          y: mass.current?.offsetTop,
+          x: mass.current?.offsetLeft,
+        });
+      }
+    });
   }, []);
 
-  function draw(el: any = lineArr): void {
-    el.forEach((e: any) => {
+  function draw(el = lineArr): void {
+    el.forEach(e => {
       drawLine(ctx, e);
     });
   }
@@ -47,7 +72,7 @@ const Canvas: CanvasProps = () => {
   }
   function calc(e: CanvasHTML): { x: number; y: number } {
     console.log(position);
-    
+
     const x = e.pageX - (position.x || 0);
     const y = e.pageY - (position.y || 0);
 
@@ -61,7 +86,7 @@ const Canvas: CanvasProps = () => {
       start,
       end: start,
     };
-    setLineArr((prev: any) => [...prev, line]);
+    setLineArr(prev => [...prev, line]);
 
     draw();
 
@@ -69,14 +94,14 @@ const Canvas: CanvasProps = () => {
   }
 
   function intersect(
-    x1: any,
-    y1: any,
-    x2: any,
-    y2: any,
-    x3: any,
-    y3: any,
-    x4: any,
-    y4: any,
+    x1: number,
+    y1: number,
+    x2: number,
+    y2: number,
+    x3: number,
+    y3: number,
+    x4: number,
+    y4: number,
   ) {
     // Check if none of the lines are of length 0
     if ((x1 === x2 && y1 === y2) || (x3 === x4 && y3 === y4)) {
@@ -128,9 +153,9 @@ const Canvas: CanvasProps = () => {
     ctx?.clearRect(0, 0, 30001, 30001);
   }
 
-  function grafiti(arg: any): void {
+  function grafiti(arg: Tpos[]) {
     if (ctx) {
-      arg.forEach((e: any) => {
+      arg.forEach(e => {
         ctx.beginPath();
         ctx.arc(e.x, e.y, 5, 0, Math.PI * 2, true);
         ctx.fillStyle = 'red';
@@ -139,7 +164,7 @@ const Canvas: CanvasProps = () => {
     }
   }
 
-  function handlMove(e: CanvasHTML): void {
+  function handlMove(e: CanvasHTML) {
     if (triger) {
       const { x, y } = calc(e);
 
@@ -164,7 +189,7 @@ const Canvas: CanvasProps = () => {
       //цятка
       if (lineArr.length > 1) {
         if (ctx) {
-          const result = newArr.reduce((acc: any[], el: any) => {
+          const result = newArr.reduce((acc: Tpos[], el) => {
             const helper = intersect(
               el.start.x,
               el.start.y,
@@ -195,7 +220,7 @@ const Canvas: CanvasProps = () => {
     }
   }
 
-  function rightClick(e: any): void {
+  function rightClick(e: React.MouseEvent<HTMLCanvasElement, MouseEvent>) {
     e.preventDefault();
     if (drawTrig) {
       const newArr = lineArr;
@@ -209,7 +234,7 @@ const Canvas: CanvasProps = () => {
     }
   }
 
-  function helperClac(el: any) {
+  function helperClac(el: Obj) {
     const balanseX = (el.start.x + el.end.x) / 2;
     const balanseY = (el.start.y + el.end.y) / 2;
 
@@ -226,11 +251,11 @@ const Canvas: CanvasProps = () => {
     return result;
   }
 
-  function clearBut(e: React.MouseEvent<HTMLButtonElement>): void {
+  function clearBut(e: React.MouseEvent<HTMLButtonElement>) {
     setAnimationTriger(true);
 
     e.preventDefault();
-    (function loops(el: any, triger: number): any {
+    (function loops(el: any, triger: number) {
       if (triger <= 0) {
         return;
       }
@@ -238,7 +263,7 @@ const Canvas: CanvasProps = () => {
       const helper = el.line || el;
       setTimeout(() => {
         const red = helper.reduce(
-          (acc: any, el: any) => {
+          (acc: { line: Obj[]; dots: Tpos[] }, el: Obj) => {
             const { start, end } = helperClac(el);
 
             acc.line.push({
@@ -246,7 +271,7 @@ const Canvas: CanvasProps = () => {
               end,
             });
 
-            helper.reduce((_: any[], ell: any) => {
+            helper.reduce((_: Tpos[], ell: Obj) => {
               const helper = intersect(
                 ell.start.x,
                 ell.start.y,
@@ -287,19 +312,19 @@ const Canvas: CanvasProps = () => {
   }
   return (
     <div className={s.box}>
-          <div className={s.Canvas}>
-      <canvas
-        onMouseMove={handlMove}
-        onClick={handlClick}
-        onContextMenu={rightClick}
-        ref={mass}
-        width={width}
-        height={heigth}
-        className={s.Canvass}
-      />
-    </div>
+      <div className={s.Canvas}>
+        <canvas
+          onMouseMove={handlMove}
+          onClick={handlClick}
+          onContextMenu={rightClick}
+          ref={mass}
+          width={width}
+          height={heigth}
+          className={s.Canvass}
+        />
+      </div>
       <button onClick={clearBut}>Click me please</button>
-</div>
+    </div>
   );
 };
 
