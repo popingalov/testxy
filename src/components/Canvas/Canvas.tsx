@@ -71,7 +71,6 @@ const Canvas: CanvasProps = () => {
     }
   }
   function calc(e: CanvasHTML): { x: number; y: number } {
-    console.log(position);
 
     const x = e.pageX - (position.x || 0);
     const y = e.pageY - (position.y || 0);
