@@ -54,6 +54,8 @@ const Canvas: CanvasProps = () => {
   }, []);
 
   function draw(el = lineArr): void {
+    console.log(ctx);
+    
     el.forEach(e => {
       drawLine(ctx, e);
     });
