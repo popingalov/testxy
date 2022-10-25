@@ -1,4 +1,4 @@
-import { Component} from 'react';
+import { Component } from 'react';
 import s from './Canvas.module.scss';
 // import throttle from 'lodash.throttle';
 // interface CanvasProps {
@@ -33,12 +33,12 @@ type Tdot = Dot[];
 
 type Test = any;
 class Canvas extends Component<Test> {
-state = {
+  state = {
     ctx: null,
     position: { x: 0, y: 0 },
     triger: false,
-    width: 0,
-    heigth: 0,
+    width: window.innerWidth - 127,
+    heigth: window.innerHeight - window.innerHeight * 0.2,
     lineArr: [],
     start: { x: 0, y: 0 },
     dot: [],
@@ -79,7 +79,7 @@ state = {
     return this.state.heigth;
   }
 
-  set heigth(arg:number) {
+  set heigth(arg: number) {
     this.setState({ heigth: arg });
   }
   get lineArr() {
@@ -100,7 +100,7 @@ state = {
     return this.state.animationTriger;
   }
 
-  set animationTriger(arg:boolean) {
+  set animationTriger(arg: boolean) {
     this.setState({ animationTriger: arg });
   }
   get dot() {
@@ -121,39 +121,32 @@ state = {
     return this.state.drawTrig;
   }
 
-  set drawTrig(arg:boolean) {
+  set drawTrig(arg: boolean) {
     this.setState({ drawTrig: arg });
   }
 
-  
   componentDidMount(): void {
     const refa = document.getElementsByTagName('canvas')[0];
     const newCtx = refa.getContext('2d');
-    setTimeout(() => {
       this.setState({
-      ctx: newCtx,
-      position: { y: refa.offsetTop, x: refa.offsetTop },
-      triger: false,
-      width: window.innerWidth - 127,
-      heigth: window.innerHeight - window.innerHeight * 0.2,
-    });
- },1)
+        ctx: newCtx,
+        position: { y: refa.offsetTop, x: refa.offsetLeft },
+        triger: false
+      });
+  
   }
 
   draw = (el = this.state.lineArr): void => {
     const { ctx } = this;
-    
+
     el.forEach(e => {
       this.drawLine(ctx, e);
     });
   };
 
-
-
   drawLine = (ctx: Canva, line: Obj): void => {
     const { start, end } = line;
     if (ctx) {
-      
       ctx.beginPath();
       ctx.moveTo(start.x, start.y);
       ctx.lineTo(end.x, end.y);
@@ -367,64 +360,62 @@ state = {
   };
 
   coloseAnimation = (el: any, triger: number) => {
-       
-      if (triger <= 0) {
-        return;
-      }
-    const { clearLine, helperClac, intersect,grafiti,draw ,coloseAnimation} = this
-      let newTriger = triger - 200;
-      const helper = el.line || el;
-      setTimeout(() => {
-      
-        const red = helper.reduce(
-          (acc: { line: Obj[]; dots: Tpos[] }, el: Obj) => {
-            const { start, end } = helperClac(el);
+    if (triger <= 0) {
+      return;
+    }
+    const { clearLine, helperClac, intersect, grafiti, draw, coloseAnimation } =
+      this;
+    let newTriger = triger - 200;
+    const helper = el.line || el;
+    setTimeout(() => {
+      const red = helper.reduce(
+        (acc: { line: Obj[]; dots: Tpos[] }, el: Obj) => {
+          const { start, end } = helperClac(el);
 
-            acc.line.push({
-              start,
-              end,
-            });
+          acc.line.push({
+            start,
+            end,
+          });
 
-            helper.reduce((_: Tpos[], ell: Obj) => {
-              const helper = intersect(
-                ell.start.x,
-                ell.start.y,
-                ell.end.x,
-                ell.end.y,
-                el.start.x,
-                el.start.y,
-                el.end.x,
-                el.end.y,
-              );
+          helper.reduce((_: Tpos[], ell: Obj) => {
+            const helper = intersect(
+              ell.start.x,
+              ell.start.y,
+              ell.end.x,
+              ell.end.y,
+              el.start.x,
+              el.start.y,
+              el.end.x,
+              el.end.y,
+            );
 
-              if (helper) {
-                acc.dots.push(helper);
-              }
-              return acc;
-            }, []);
-            // if (result.length > 0) acc.dots.push(result);
-
+            if (helper) {
+              acc.dots.push(helper);
+            }
             return acc;
-          },
-          { line: [], dots: [] },
-        );
+          }, []);
+          // if (result.length > 0) acc.dots.push(result);
 
-        this.lineArr = red;
-    
+          return acc;
+        },
+        { line: [], dots: [] },
+      );
 
-        clearLine();
-        grafiti(red.dots);
-        draw(red.line);
-        coloseAnimation(red, newTriger);
-      }, 60);
-    };
+      this.lineArr = red;
+
+      clearLine();
+      grafiti(red.dots);
+      draw(red.line);
+      coloseAnimation(red, newTriger);
+    }, 60);
+  };
 
   clearBut = (e: React.MouseEvent<HTMLButtonElement>) => {
-    const { coloseAnimation,lineArr} = this;
+    const { coloseAnimation, lineArr } = this;
     this.animationTriger = true;
     e.preventDefault();
 
-    coloseAnimation(lineArr,8000)
+    coloseAnimation(lineArr, 8000);
 
     setTimeout(() => {
       this.lineArr = [];
@@ -436,7 +427,7 @@ state = {
   };
   render() {
     const { width, heigth } = this.state;
-    const { handlMove, handlClick, rightClick ,clearBut} = this;
+    const { handlMove, handlClick, rightClick, clearBut } = this;
     return (
       <div className={s.box}>
         <div className={s.Canvas}>
